@@ -1,0 +1,41 @@
+# `book-ms/dockerfile`
+# Use the official Golang image to create a build artifact.
+FROM golang:1.20 as builder
+
+# Set the Current Working Directory inside the container
+WORKDIR /app
+
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN go mod download
+
+# Copy the entire backend directory, so that the build can access the utils package
+COPY ./book-ms .
+COPY ./utils ./backend/utils
+
+
+RUN go build -o book-ms .
+
+# Build the Go app with CGO disabled to produce a statically linked binary
+WORKDIR /app/book-ms
+RUN CGO_ENABLED=0 GOOS=linux go build -o book-ms
+
+# Start a new stage from scratch
+FROM alpine:latest
+
+# Install necessary packages
+RUN apk --no-cache add ca-certificates
+
+# Copy the Pre-built binary file from the previous stage
+COPY --from=builder /app/book-ms/book-ms /book-ms
+
+# Ensure the binary has executable permissions
+RUN chmod +x /book-ms
+
+# Expose port 8080 to the outside world
+EXPOSE 8080
+
+# Command to run the executable
+CMD ["/book-ms"]

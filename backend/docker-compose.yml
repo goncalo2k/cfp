@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  book-ms:
+    build:
+      context: .
+      dockerfile: book-ms/dockerfile
+    env_file:
+      - book-ms/.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - utils
+
+  utils:
+    build:
+      context: .
+      dockerfile: utils/dockerfile
+    ports:
+      - "8081:8081"
