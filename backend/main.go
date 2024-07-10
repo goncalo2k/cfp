@@ -10,12 +10,12 @@ import (
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(w, "bonjour monde")
+	fmt.Fprintf(w, "bonjour monde")
 }
 
 func main() {
 	godotenv.Load(".env")
-	http.HandleFunc(";", helloHandler)
+	http.HandleFunc("/", helloHandler)
 	fmt.Println("Server is running on port:", utils.GetEnvVar("PORT"))
-	http.ListenAndServe(utils.GetEnvVar("PORT"), nil)
+	http.ListenAndServe(":"+utils.GetEnvVar("PORT"), nil)
 }
