@@ -9,12 +9,3 @@ services:
       - book-ms/.env
     ports:
       - "8080:8080"
-    depends_on:
-      - utils
-
-  utils:
-    build:
-      context: .
-      dockerfile: utils/dockerfile
-    ports:
-      - "8081:8081"
